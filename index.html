@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Лагерь Эметар</title>
+  <style>
+    :root {
+      --gold: #d9a84d;
+      --gold-light: #ffe7a3;
+      --ink: #050b16;
+      --panel: #07111fcc;
+      --line: #b7792d;
+      --muted: #c8b48b;
+      --shadow: #02050bcc;
+      --max-boxes: 30;
+      --keys-per-box: 35;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow: hidden;
+      color: #f7dfad;
+      font-family: Georgia, "Times New Roman", serif;
+      background: #050b16 url("background.png") center / cover no-repeat fixed;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 72% 42%, transparent 0 16%, #02061133 30%, #020611cc 78%),
+        linear-gradient(90deg, #020611e6 0%, #06142aaa 43%, #02061133 78%),
+        linear-gradient(180deg, #02061155 0%, #02061111 46%, #020611d9 100%);
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(360px, 0.95fr) minmax(360px, 1.05fr);
+      gap: clamp(24px, 4vw, 72px);
+      align-items: end;
+      padding: clamp(22px, 4vw, 62px);
+    }
+
+    .brand {
+      position: absolute;
+      top: clamp(22px, 4vw, 54px);
+      left: clamp(26px, 5vw, 76px);
+      width: clamp(72px, 8vw, 116px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      filter: drop-shadow(0 0 16px #d9a84d55);
+    }
+
+    .brand::before,
+    .brand::after {
+      content: "";
+      position: absolute;
+      width: 78%;
+      height: 78%;
+      border: 3px solid currentColor;
+      clip-path: polygon(50% 0, 100% 86%, 0 86%);
+    }
+
+    .brand::after {
+      transform: rotate(180deg);
+    }
+
+    .brand span {
+      position: relative;
+      z-index: 1;
+      font: 700 clamp(22px, 2.5vw, 36px) Arial, sans-serif;
+    }
+
+    .hero {
+      align-self: center;
+      padding-top: clamp(70px, 9vh, 112px);
+      max-width: 780px;
+    }
+
+    .welcome {
+      margin: 0 0 4px;
+      color: var(--gold-light);
+      font-size: clamp(18px, 2vw, 32px);
+      text-shadow: 0 2px 12px #000;
+    }
+
+    h1 {
+      margin: 0 0 22px;
+      color: #d59a3d;
+      font-size: clamp(56px, 7.4vw, 116px);
+      line-height: 0.92;
+      letter-spacing: 0;
+      text-shadow:
+        0 2px 0 #fff0ba66,
+        0 8px 18px #000,
+        0 0 28px #d59a3d55;
+    }
+
+    .motto {
+      width: min(590px, 100%);
+      padding: 13px 28px 15px;
+      border: 1px solid var(--line);
+      color: var(--gold-light);
+      font-size: clamp(18px, 1.7vw, 28px);
+      text-align: center;
+      background: #07111fa8;
+      box-shadow: inset 0 0 0 1px #f4b85b22, 0 12px 34px #02050b99;
+      clip-path: polygon(18px 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 18px 100%, 0 50%);
+    }
+
+    .progress-card {
+      width: min(720px, 100%);
+      margin-top: clamp(30px, 4.4vh, 54px);
+      padding: clamp(22px, 2.7vw, 34px);
+      border: 1px solid var(--line);
+      color: #f8dd9f;
+      background:
+        radial-gradient(circle at 74% 50%, #d08b2a22 0 12%, transparent 38%),
+        linear-gradient(135deg, #07111fe0, #040913c9);
+      box-shadow: inset 0 0 0 1px #f4b85b22, 0 22px 58px #000a;
+      clip-path: polygon(18px 0, calc(100% - 18px) 0, 100% 18px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 18px 100%, 0 calc(100% - 18px), 0 18px);
+    }
+
+    .progress-card h2 {
+      margin: 0 0 18px;
+      font-weight: 400;
+      font-size: clamp(24px, 2.4vw, 38px);
+    }
+
+    .score-row {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .opened {
+      min-width: 120px;
+      color: #fff3bf;
+      font-size: clamp(68px, 7.1vw, 102px);
+      font-weight: 700;
+      line-height: 0.9;
+      text-shadow: 0 4px 0 #74501d, 0 0 24px #ffe7a366;
+    }
+
+    .of {
+      font-size: clamp(26px, 2.8vw, 42px);
+      color: #f6cf80;
+    }
+
+    .bar {
+      width: min(520px, 100%);
+      height: 22px;
+      border: 2px solid var(--gold);
+      border-radius: 999px;
+      background: #010711d9;
+      box-shadow: inset 0 0 10px #000, 0 0 20px #d9a84d22;
+      overflow: hidden;
+    }
+
+    .fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #8d4d19, #d9a84d, #fff1b5);
+      box-shadow: 0 0 18px #ffd36e99;
+      transition: width 0.45s ease;
+    }
+
+    .hint {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font: 16px Arial, sans-serif;
+    }
+
+    .hint::before {
+      content: "⚿";
+      color: var(--gold);
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .top-score {
+      position: absolute;
+      top: clamp(24px, 4vw, 56px);
+      right: clamp(78px, 8vw, 140px);
+      min-width: clamp(190px, 18vw, 270px);
+      padding: 13px 28px 15px;
+      border: 1px solid var(--line);
+      background: #07111fc9;
+      box-shadow: inset 0 0 0 1px #f4b85b22, 0 10px 28px #0009;
+      clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+    }
+
+    .top-score span {
+      display: block;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .top-score strong {
+      display: block;
+      margin-top: 2px;
+      color: #ffe7a3;
+      font-size: 34px;
+      font-weight: 400;
+    }
+
+    .tower-area {
+      align-self: end;
+      display: flex;
+      justify-content: center;
+      padding-bottom: clamp(10px, 3vh, 42px);
+    }
+
+    .tower {
+      width: min(620px, 44vw);
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      filter: drop-shadow(0 26px 22px #000c);
+    }
+
+    .row {
+      display: flex;
+      justify-content: center;
+      gap: clamp(7px, 0.8vw, 11px);
+      margin-top: -2px;
+    }
+
+    .box {
+      width: clamp(50px, 5vw, 82px);
+      aspect-ratio: 1.05;
+      position: relative;
+      border: 2px solid #9b6c38;
+      border-radius: 4px;
+      background:
+        linear-gradient(135deg, #46344b, #1d1b2b 55%, #090d18);
+      box-shadow:
+        inset 4px 4px 0 #e4aa5833,
+        inset -5px -5px 0 #0008,
+        0 10px 14px #0008;
+      opacity: 0.42;
+      transition: transform 0.35s ease, opacity 0.35s ease, filter 0.35s ease;
+    }
+
+    .box::before {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 1px solid #c58c45aa;
+      border-radius: 3px;
+    }
+
+    .box::after {
+      content: "✦";
+      position: absolute;
+      inset: 50% auto auto 50%;
+      transform: translate(-50%, -50%);
+      color: #d9a84d;
+      font-size: clamp(20px, 2vw, 32px);
+      text-shadow: 0 0 12px #ffd36e99;
+    }
+
+    .box.open {
+      opacity: 1;
+      filter: saturate(1.18) brightness(1.16);
+      transform: translateY(-4px);
+      background:
+        radial-gradient(circle at 50% 48%, #ffd36e55 0 13%, transparent 30%),
+        linear-gradient(135deg, #5d3d52, #29223b 55%, #111421);
+    }
+
+    .admin {
+      position: fixed;
+      right: 18px;
+      bottom: 16px;
+      z-index: 5;
+      display: flex;
+      align-items: end;
+      gap: 10px;
+      font-family: Arial, sans-serif;
+    }
+
+    .admin-toggle {
+      width: 42px;
+      height: 42px;
+      border: 1px solid #c58c45aa;
+      border-radius: 50%;
+      color: #e5b767;
+      background: #07111fbf;
+      cursor: pointer;
+      font-size: 21px;
+      box-shadow: 0 8px 20px #0008;
+      opacity: 0.45;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .admin-toggle:hover,
+    .admin.open .admin-toggle {
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+
+    .admin-panel {
+      display: none;
+      width: 230px;
+      padding: 12px;
+      border: 1px solid #c58c45aa;
+      border-radius: 8px;
+      background: #07111fe6;
+      box-shadow: 0 18px 40px #000a;
+    }
+
+    .admin.open .admin-panel {
+      display: grid;
+      gap: 8px;
+    }
+
+    .admin-panel label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .admin-panel input {
+      width: 100%;
+      height: 36px;
+      border: 1px solid #9b6c38;
+      border-radius: 6px;
+      padding: 0 10px;
+      color: #fff3bf;
+      background: #020711;
+      font-size: 16px;
+    }
+
+    .admin-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
+
+    .admin-panel button {
+      height: 36px;
+      border: 1px solid #d9a84d;
+      border-radius: 6px;
+      color: #1b1205;
+      background: linear-gradient(180deg, #ffe7a3, #d9a84d);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .admin-panel .reset {
+      width: 38px;
+      color: #eacb82;
+      background: #111827;
+      font-weight: 400;
+    }
+
+    @media (max-width: 980px) {
+      body {
+        overflow: auto;
+        background-position: 62% center;
+      }
+
+      .page {
+        grid-template-columns: 1fr;
+        align-items: start;
+        padding-top: 128px;
+      }
+
+      .top-score {
+        right: 24px;
+      }
+
+      .tower {
+        width: 100%;
+        max-width: 700px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .page {
+        padding: 118px 18px 92px;
+      }
+
+      .brand {
+        left: 18px;
+      }
+
+      .top-score {
+        min-width: 150px;
+        right: 18px;
+        padding: 10px 18px;
+      }
+
+      .top-score strong {
+        font-size: 28px;
+      }
+
+      .progress-card {
+        padding: 22px;
+      }
+
+      .row {
+        gap: 5px;
+      }
+
+      .box {
+        width: clamp(37px, 10.5vw, 50px);
+      }
+
+      .score-row {
+        gap: 12px;
+      }
+
+      .opened {
+        min-width: 82px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="brand" aria-hidden="true"><span>Э</span></div>
+
+  <aside class="top-score" aria-label="Собранные ключи">
+    <span>Ключей знаний</span>
+    <strong id="keys">0</strong>
+  </aside>
+
+  <main class="page">
+    <section class="hero">
+      <p class="welcome">Добро пожаловать в</p>
+      <h1>Лагерь Эметар</h1>
+      <div class="motto">Где приключения становятся легендой</div>
+
+      <section class="progress-card" aria-label="Прогресс открытия коробок">
+        <h2>Коробок открыто:</h2>
+        <div class="score-row">
+          <strong class="opened" id="opened">0</strong>
+          <span class="of">из 30</span>
+        </div>
+        <div class="bar" aria-hidden="true"><div class="fill" id="fill"></div></div>
+        <p class="hint" id="progress">До следующей коробки: 35 ключей</p>
+      </section>
+    </section>
+
+    <section class="tower-area" aria-label="Башня коробок">
+      <div class="tower" id="tower"></div>
+    </section>
+  </main>
+
+  <section class="admin" id="admin">
+    <form class="admin-panel" id="admin-form">
+      <label for="amount">Добавить ключи</label>
+      <input id="amount" name="amount" type="number" min="1" step="1" inputmode="numeric" placeholder="Например, 17">
+      <div class="admin-actions">
+        <button type="submit">Добавить</button>
+        <button class="reset" id="reset" type="button" title="Сбросить счетчик">0</button>
+      </div>
+    </form>
+    <button class="admin-toggle" id="admin-toggle" type="button" aria-label="Открыть добавление ключей">⚙</button>
+  </section>
+
+  <script>
+    const MAX_BOXES = 30;
+    const KEYS_PER_BOX = 35;
+    const MAX_KEYS = MAX_BOXES * KEYS_PER_BOX;
+    const STORAGE_KEY = "emetarKeys";
+
+    const keysEl = document.querySelector("#keys");
+    const openedEl = document.querySelector("#opened");
+    const fillEl = document.querySelector("#fill");
+    const progressEl = document.querySelector("#progress");
+    const towerEl = document.querySelector("#tower");
+    const adminEl = document.querySelector("#admin");
+    const amountEl = document.querySelector("#amount");
+
+    let totalKeys = Number(localStorage.getItem(STORAGE_KEY) || 0);
+    const boxes = [];
+
+    [7, 6, 6, 5, 4, 2].forEach((size) => {
+      const row = document.createElement("div");
+      row.className = "row";
+      for (let index = 0; index < size; index += 1) {
+        const box = document.createElement("div");
+        box.className = "box";
+        row.append(box);
+        boxes.push(box);
+      }
+      towerEl.append(row);
+    });
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, String(totalKeys));
+    }
+
+    function render() {
+      totalKeys = Math.max(0, Number(totalKeys) || 0);
+      const opened = Math.min(MAX_BOXES, Math.floor(totalKeys / KEYS_PER_BOX));
+      const untilNext = opened === MAX_BOXES ? 0 : KEYS_PER_BOX - (totalKeys % KEYS_PER_BOX);
+
+      keysEl.textContent = totalKeys;
+      openedEl.textContent = opened;
+      fillEl.style.width = `${Math.min(100, (totalKeys / MAX_KEYS) * 100)}%`;
+      progressEl.textContent = opened === MAX_BOXES
+        ? "Все коробки открыты"
+        : `До следующей коробки: ${untilNext} ключей`;
+
+      boxes.forEach((box, index) => {
+        box.classList.toggle("open", index < opened);
+      });
+    }
+
+    document.querySelector("#admin-toggle").addEventListener("click", () => {
+      adminEl.classList.toggle("open");
+      if (adminEl.classList.contains("open")) amountEl.focus();
+    });
+
+    document.querySelector("#admin-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const amount = Math.floor(Number(amountEl.value));
+      if (!amount || amount < 1) return;
+      totalKeys += amount;
+      amountEl.value = "";
+      save();
+      render();
+    });
+
+    document.querySelector("#reset").addEventListener("click", () => {
+      totalKeys = 0;
+      save();
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
