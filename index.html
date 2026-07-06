@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Лагерь Эметар</title>
+  <title>Добро пожаловать</title>
   <style>
     :root {
       --gold: #d9a84d;
@@ -53,38 +53,6 @@
       gap: clamp(24px, 4vw, 72px);
       align-items: end;
       padding: clamp(22px, 4vw, 62px);
-    }
-
-    .brand {
-      position: absolute;
-      top: clamp(22px, 4vw, 54px);
-      left: clamp(26px, 5vw, 76px);
-      width: clamp(72px, 8vw, 116px);
-      aspect-ratio: 1;
-      display: grid;
-      place-items: center;
-      color: var(--gold);
-      filter: drop-shadow(0 0 16px #d9a84d55);
-    }
-
-    .brand::before,
-    .brand::after {
-      content: "";
-      position: absolute;
-      width: 78%;
-      height: 78%;
-      border: 3px solid currentColor;
-      clip-path: polygon(50% 0, 100% 86%, 0 86%);
-    }
-
-    .brand::after {
-      transform: rotate(180deg);
-    }
-
-    .brand span {
-      position: relative;
-      z-index: 1;
-      font: 700 clamp(22px, 2.5vw, 36px) Arial, sans-serif;
     }
 
     .hero {
@@ -402,10 +370,6 @@
         padding: 118px 18px 92px;
       }
 
-      .brand {
-        left: 18px;
-      }
-
       .top-score {
         min-width: 150px;
         right: 18px;
@@ -439,8 +403,6 @@
   </style>
 </head>
 <body>
-  <div class="brand" aria-hidden="true"><span>Э</span></div>
-
   <aside class="top-score" aria-label="Собранные ключи">
     <span>Ключей знаний</span>
     <strong id="keys">0</strong>
@@ -448,9 +410,9 @@
 
   <main class="page">
     <section class="hero">
-      <p class="welcome">Добро пожаловать в</p>
-      <h1>Лагерь Эметар</h1>
-      <div class="motto">Где приключения становятся легендой</div>
+      <p class="welcome">Свет против тени</p>
+      <h1>Добро пожаловать</h1>
+      <div class="motto">Собирайте ключи знаний и открывайте коробки</div>
 
       <section class="progress-card" aria-label="Прогресс открытия коробок">
         <h2>Коробок открыто:</h2>
